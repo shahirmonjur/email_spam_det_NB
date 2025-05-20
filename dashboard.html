@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<div class="main">
+    <div class="container">
+        <h2 class="heading">Welcome, {{ user.name }}</h2>
+        <table class="email-table" id="emailTable">
+            <tr>
+                <th>Subject</th>
+                <th>Status</th>
+            </tr>
+            {% for email in emails %}
+            <tr class="clickable" onclick="showBody(`{{ email.body | escape }}`)">
+                <td class="subject">{{ email.subject }}</td>
+                <td class="{{ 'ham' if email.label == 'HAM' else 'spam' }}">{{ email.label }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button id="loadMoreBtn" onclick="loadMore()">See More</button>
+    </div>
+</div>
+
+<!-- Popup Modal for showing Email Body -->
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <div id="popupBodyContainer">
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    let start = 10;
+
+    function loadMore() {
+        fetch("/load_more", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "start=" + start
+        })
+        .then(response => response.json())
+        .then(data => {
+            const table = document.getElementById("emailTable");
+            data.forEach(email => {
+                const row = table.insertRow();
+                row.classList.add("clickable");
+                row.onclick = () => showBody(email.body);
+                row.innerHTML = `<td class = 'subject'>${email.subject}</td>
+                                 <td class="${email.label === 'HAM' ? 'ham' : 'spam'}">${email.label}</td>`;
+            });
+            start += 10;
+        });
+    }
+
+    function showBody(body) {
+        document.getElementById("popupBodyContainer").textContent = body;
+        document.getElementById("popup").style.display = "flex";
+    }
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+</script>
+{% endblock %}

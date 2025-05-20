@@ -1,0 +1,8 @@
+Flask
+flask-dance
+google-auth
+google-auth-oauthlib
+google-api-python-client
+scikit-learn
+pandas
+joblib

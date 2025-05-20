@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main">
+    <div class="container">
+        <h2 class="heading">Email <span class="spam-heading">Spam</span> Detection</h2>
+        <form method="post">
+            <input type="text" class="text-box" name="email_text" placeholder="Enter your email text here..." required>
+            <input type="submit" value="Check">
+        </form>
+
+        {% if prediction %}
+            <script>
+                alert("Prediction: {{ prediction }}");
+            </script>
+            <h3 class="prediction">
+                <span class="{{ 'ham' if prediction == 'HAM' else 'spam' }}">{{ prediction }}</span>
+            </h3>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
